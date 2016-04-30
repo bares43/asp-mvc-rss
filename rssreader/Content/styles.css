@@ -1,0 +1,25 @@
+.feeds {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+.feeds li {
+  padding: 5px;
+}
+.feeds li a,
+.feeds li a:hover {
+  color: #333;
+  text-decoration: none;
+}
+.margin-top-25 {
+  margin-top: 25px;
+}
+h1 a,
+h1:hover a {
+  color: #333;
+  text-decoration: none;
+}
+footer {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}

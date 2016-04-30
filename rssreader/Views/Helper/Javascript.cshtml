@@ -1,0 +1,23 @@
+﻿@using rssreader.Models
+@model JavascriptHelper
+@{
+    Layout = null;
+}
+
+@if (Model != null)
+{
+    <script type="text/javascript">
+            @foreach (var section in Model.Sections)
+                {
+                    switch (section.Action)
+                    {
+                        case JavascriptHelper.Actions.Success:
+                            @Html.Raw($"createAlert(\"{section.Params["message"]}\",\"success\");")
+                            break;
+                        case JavascriptHelper.Actions.Warning:
+                            @Html.Raw($"createAlert(\"{section.Params["message"]}\",\"danger\");")
+                            break;
+                    }
+                }
+    </script>
+}

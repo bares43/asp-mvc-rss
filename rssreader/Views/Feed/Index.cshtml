@@ -1,0 +1,138 @@
+﻿@using rssreader.Models
+@model rssreader.Models.View.Index
+@{
+    ViewBag.Title = "Index";
+}
+
+<div id="content">
+    <div class="col-xs-12 col-sm-4">
+
+        @Html.Action("AddForm")
+
+        @if (Model.Feeds.Any())
+        {
+            using (Ajax.BeginForm("Delete", new AjaxOptions() { HttpMethod = "POST", UpdateTargetId = "content", InsertionMode = InsertionMode.Replace }))
+            {
+
+                <ul class="feeds margin-top-25">
+
+                    <li>
+                        <a href="@Url.Action("Index", "Feed", new {id = ""})" data-ajax-update="#content" data-ajax-method="POST" data-ajax="true" data-ajax-mode="replace">
+                            Zobrazit vše
+                        </a>
+                    </li>
+
+                    @foreach (var feed in Model.Feeds)
+                    {
+                        <li @Html.Raw((Model.CurrentFeedId.HasValue && Model.CurrentFeedId.Value == feed.Id ? "class=\"bg-info\"" : ""))>
+                            <input type="checkbox" value="@feed.Id" name="id[]"/>
+                            <a href="@Url.Action("Delete", "Feed", new {id = feed.Id})" data-ajax-update="#content" data-ajax-method="POST" data-ajax="true" data-ajax-mode="replace">
+                                <i class="fa fa-trash text-danger"></i>
+                            </a>
+                            <a href="@Url.Action("Index", "Feed", new {id = feed.Id})" data-ajax-update="#content" data-ajax-method="POST" data-ajax="true" data-ajax-mode="replace">
+                                @feed.Name
+                            </a>
+
+                            <i class="fa fa-spinner fa-spin fa-fw hidden"></i>
+                        </li>
+                    }
+                </ul>
+
+                <div class="margin-top-25">
+                    <span class="btn btn-default btn-sm" id="check-all" data-checked="false">Vybrat vše</span>
+                    <button class="btn btn-default btn-sm">Smazat vybrané</button>
+                    <a href="@Url.Action("DeleteAll")" class="btn btn-default btn-sm" data-ajax-update="#content" data-ajax-method="POST" data-ajax="true" data-ajax-mode="replace">Smazat vše</a>
+                </div>
+
+          }
+
+        }
+        else
+        {
+            <p class="margin-top-25">Přidejte si feed, ať víte, co je nového :)</p>
+        }
+
+
+        <div class="alerts margin-top-25">
+        </div>
+
+    </div>
+    <div class="col-xs-12 col-sm-8">
+
+        
+
+
+        @using (Ajax.BeginForm("Index", "Feed", new AjaxOptions() {OnBegin = "addFilterLoader",HttpMethod = "POST", UpdateTargetId = "content", InsertionMode = InsertionMode.Replace }, new { @class = "form-inline" }))
+        {
+
+            if (Model.Feeds.Any())
+            {
+                <a href="@Url.Action("RefreshFeed", "Feed", new {id = Model.CurrentFeedId})" class="btn btn-primary" data-ajax-update="#content" data-ajax-method="POST" data-ajax="true" data-ajax-mode="replace" data-ajax-begin="showRefreshLoader" id="refresh"><i class="fa fa-refresh" aria-hidden="true"></i> Obnovit</a>
+            }
+
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.FilterFrom)
+            @Html.EditorFor(m => m.FilterFrom, new { htmlAttributes = new { @class = "form-control datepicker" } })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.FilterTo)
+            @Html.EditorFor(m => m.FilterTo, new { htmlAttributes = new { @class = "form-control datepicker",@val=DateTime.Now.ToShortDateString() } })
+        </div>
+
+
+
+            if (Model.CurrentFeedId.HasValue)
+            {
+                <input type="hidden" name="id" value="@Model.CurrentFeedId.Value" />
+            }
+
+            <button class="btn btn-default btn-sm">Zobrazit</button>
+            <i class="fa fa-spinner fa-spin fa-fw margin-bottom hidden" id="filter-loader"></i>
+
+        }
+
+        @if (Model.Items.Any())
+        {
+
+
+
+            <table class="table table-condensed margin-top-25">
+                <thead>
+                    <tr>
+                        <td>Název</td>
+                        <td>Přidáno</td>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>
+                            @if (!Model.CurrentFeedId.HasValue)
+                            {
+                                <a href="@Url.Action("Index", "Feed", new {id = item.Feed.Id})" class="badge">@item.Feed.Name</a>
+                            }
+                            <a href="@item.Url" target="_blank">@item.Title</a>
+                        </td>
+                        <td>@item.Created</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p class="margin-top-25">Žádné nové zprávy :)</p>
+        }
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".datepicker").datepicker($.datepicker.regional["cs"]);
+        });
+    </script>
+
+    @Html.Action("Javascript", "Helper", new { helper = Model.JavascriptHelper })
+
+</div>
