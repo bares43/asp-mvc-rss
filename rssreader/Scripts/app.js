@@ -12,6 +12,9 @@ function addFeedLoader() {
 function addFilterLoader() {
     $("#filter-loader").removeClass("hidden");
 }
+function addDeleteLoader() {
+    $("#delete-loader").removeClass("hidden");
+}
 function showRefreshLoader() {
     $("#refresh i").addClass("fa-spin");
 }
